@@ -19,6 +19,7 @@ enum ResponseCode {
     NO_PERMISSION = "NP",
 
     //Http Status 500 - Internal Server Error
+    MAIL_FAIL = "MF",
     DATABASE_ERROR = "DBE",
 
     // 인증 실패
