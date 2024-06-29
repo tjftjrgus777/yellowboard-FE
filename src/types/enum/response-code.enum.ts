@@ -21,6 +21,9 @@ enum ResponseCode {
     //Http Status 500 - Internal Server Error
     DATABASE_ERROR = "DBE",
 
+    // 인증 실패
+    CERTIFICATION_FAIL = "CF"
+
 }
 
 export default ResponseCode;
