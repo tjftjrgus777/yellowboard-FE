@@ -36,7 +36,7 @@ export default function SignUp() {
     const [emailMessage, setEmailMessage] = useState<string>('');
     const [certificationNumberMessage, setCertificationNumberMessage] = useState<string>('');
 
-    const [isIdCheck, setIdCheck] = useState<boolean>(false;)
+    const [isIdCheck, setIdCheck] = useState<boolean>(false);
 
     const signUpButtonClass = id && password && passwordCheck && email && certificationNumber ?
         'primary-button-lg' : 'disable-button-lg';
@@ -195,15 +195,15 @@ export default function SignUp() {
                         </div>
                         <div className='sign-up-content-divider'></div>
                         <div className='sign-up-content-input-box'>
-                            <InputBox ref={idRef} title='이이디' placeholder='아이디를 입력해주세요' type='text' value={id} onChange={onIdChangeHandler} isErrorMessage={isIdError} message={idMessage} buttonTitle='중복 확인' onButtonClick={onIdButtonClickHanlder} onKeyDown={onIdKeyDownHandler}/>
-                            <InputBox ref={passwordRef} title='비밀번호' placeholder='비밀번호를 입력해주세요' type='password' value={password} onChange={onPasswordCheckChangeHandler} isErrorMessage={isPasswordError} message={passwordMessage} onKeyDown={onPasswordKeyDownHandler}/>
-                            <InputBox ref={passwordCheckRef} title='비밀번호 획인' placeholder='비밀번호를 입력해주세요' type='password' value={passwordCheck} onChange={onPasswordCheckChangeHandler} isErrorMessage={isPasswordCheckError} message={passwordCheckMessage} onKeyDown={onPasswordCheckKeyDownHandler}/>
-                            <InputBox ref={emailRef} title='이메일' placeholder='이메일 주소를 입력헤주세요' type='text' value={email} onChange={onEmailChangeHandler} isErrorMessage={isEmailError} message={emailMessage} buttonTitle='이메일 인증' onButtonClick={onEmailButtonClickHanlder} onKeyDown={onEmailKeyDownHandler}/>
-                            <InputBox ref={certificationNumberRef} title='인증번호' placeholder='인증번호 4자리르 입력해주세요' type='text' value={certificationNumber} onChange={onCertificationNumberChangeHandler} isErrorMessage={isCertificationNumberError} message={certificationNumberMessage} buttonTitle='인증 확인' onButtonClick={onCertificationNumberButtonClickHanlder} onKeyDown={onCertificiationNumberKeyDownHandler}/>
+                            {/* <InputBox ref={idRef} title='이이디' placeholder='아이디를 입력해주세요' type='text' value={id} onChange={onIdChangeHandler} isErrorMessage={isIdError} message={idMessage} buttonTitle='중복 확인' onButtonClick={onIdButtonClickHanlder} onKeyDown={onIdKeyDownHandler}/> */}
+                            {/* <InputBox ref={passwordRef} title='비밀번호' placeholder='비밀번호를 입력해주세요' type='password' value={password} onChange={onPasswordCheckChangeHandler} isErrorMessage={isPasswordError} message={passwordMessage} onKeyDown={onPasswordKeyDownHandler}/> */}
+                            {/* <InputBox ref={passwordCheckRef} title='비밀번호 획인' placeholder='비밀번호를 입력해주세요' type='password' value={passwordCheck} onChange={onPasswordCheckChangeHandler} isErrorMessage={isPasswordCheckError} message={passwordCheckMessage} onKeyDown={onPasswordCheckKeyDownHandler}/> */}
+                            {/* <InputBox ref={emailRef} title='이메일' placeholder='이메일 주소를 입력헤주세요' type='text' value={email} onChange={onEmailChangeHandler} isErrorMessage={isEmailError} message={emailMessage} buttonTitle='이메일 인증' onButtonClick={onEmailButtonClickHanlder} onKeyDown={onEmailKeyDownHandler}/> */}
+                            {/* <InputBox ref={certificationNumberRef} title='인증번호' placeholder='인증번호 4자리르 입력해주세요' type='text' value={certificationNumber} onChange={onCertificationNumberChangeHandler} isErrorMessage={isCertificationNumberError} message={certificationNumberMessage} buttonTitle='인증 확인' onButtonClick={onCertificationNumberButtonClickHanlder} onKeyDown={onCertificiationNumberKeyDownHandler}/> */}
                         </div>
                         <div className='sign-up-content-button-box'>
-                            <div className={`${signUpButtonClass} full-width`} onClick={onSignUpButtonClickHandler}>{'회원가입'}</div>
-                            <div className='text-link-lg full-width' onClick={onSignInButtonClickHandler}>{'로그인'}</div>
+                            {/* <div className={`${signUpButtonClass} full-width`} onClick={onSignUpButtonClickHandler}>{'회원가입'}</div> */}
+                            {/* <div className='text-link-lg full-width' onClick={onSignInButtonClickHandler}>{'로그인'}</div> */}
                         </div>
                     </div>
                 </div>
