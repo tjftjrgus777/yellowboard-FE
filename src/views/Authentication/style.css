@@ -69,7 +69,7 @@
     user-select: none;
     pointer-events: none;
 }
-
+/*  */
 .auth-card {
     height:90%;
     grid-column: 2 / 3;
@@ -89,12 +89,13 @@
 .auth-card-top {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 16px;
 }
 
 .auth-card-title-box {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 36px;
 }
 
 .auth-card-title {

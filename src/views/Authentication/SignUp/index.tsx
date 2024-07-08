@@ -183,7 +183,7 @@ export default function SignUp() {
             return;
         }
 
-        const requestBody: EmailCertificationRequestDto = { id, email };
+        const requestBody: EmailCertificationRequestDto = {  email };
         emailCertificationRequest(requestBody).then(emailCertificationResponse);
 
         setEmailError(false);
@@ -194,7 +194,7 @@ export default function SignUp() {
 
         if (!id || !email || !certificationNumber) return;
 
-        const requestBody: CheckCertificationRequestDto = { id, email, certificationNumber };
+        const requestBody: CheckCertificationRequestDto = { email, certificationNumber };
         checkCertificationRequest(requestBody).then(checkCertificationResponse);
 
 
