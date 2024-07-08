@@ -2,13 +2,19 @@ import React, {ChangeEvent, KeyboardEvent, useEffect, useRef, useState} from "re
 import './style.css'
 import InputBox from "../../components/InputBox";
 import {SignInRequestDto, SignUpRequestDto} from "../../apis/request/auth";
-import {signInRequest, signUpRequest} from "../../apis";
+import {checkCertificationRequest, emailCertificationRequest, signInRequest, signUpRequest} from "../../apis";
 import {ResponseDto} from "../../apis/response";
 import {SignInResponseDto} from "../../apis/response/auth";
 import {useCookies} from "react-cookie";
 import {MAIN_PATH} from "../../constant";
 import {useNavigate} from "react-router-dom";
 import {Address, useDaumPostcodePopup} from "react-daum-postcode";
+import EmailCertificationRequestDto from "apis/request/auth/email-certification.request.dto";
+import { ResponseCode } from "types/enum";
+import { responseBody } from "types";
+import EmailCertificationResponseDto from "apis/response/auth/email-certification.response.dto";
+import CheckCertificationRequestDto from "apis/request/auth/check-certification.request.dto";
+import CheckcertificationResponseDto from "apis/response/auth/check-certification.response.dto";
 
 export default function Authentication() {
 
@@ -70,6 +76,7 @@ export default function Authentication() {
         const onSignUpLinkClickHandler = () => {
             setView('sign-up');
         }
+
         const onPasswordButtonClickHandler = () => {
             if (passwordType === 'text') {
                 setPasswordType('password');
@@ -128,6 +135,7 @@ export default function Authentication() {
     const SignUpCard = () => {
 
         const emailRef = useRef<HTMLInputElement | null>(null);
+        const certificationNumberRef = useRef<HTMLInputElement | null>(null);
         const passwordRef = useRef<HTMLInputElement | null>(null);
         const passwordCheckRef = useRef<HTMLInputElement | null>(null);
 
@@ -144,12 +152,14 @@ export default function Authentication() {
 
         const [page, setPage] = useState<1 | 2>(1);
         const [email, setEmail] = useState<string>('');
+        const [certificationNumber, setCertificationNumber] = useState<string>('');
         const [password, setPassword] = useState<string>('');
         const [passwordCheck, setPasswordCheck] = useState<string>('');
         const [passwordType, setPasswordType] = useState<'text' | 'password'>('password');
         const [passwordCheckType, setPasswordCheckType] = useState<'text' | 'password'>('password');
 
         const [isEmailError, setEmailError] = useState<boolean>(false);
+        const [isCertificationNumberError, setCertificationNumberError] = useState<boolean>(false);
         const [isPasswordError, setPasswordError] = useState<boolean>(false);
         const [isPasswordCheckError, setPasswordCheckError] = useState<boolean>(false);
         const [isNicknameError, setNicknameError] = useState<boolean>(false);
@@ -157,18 +167,23 @@ export default function Authentication() {
         const [isAddressError, setAddressError] = useState<boolean>(false);
         const [isAgreedPersonalError, setAgreedPersonalError] = useState<boolean>(false);
 
-
+        const [emailMessage, setEmailMessage] = useState<string>('');
         const [emailErrorMessage, setEmailErrorMessage] = useState<string>('');
+        const [certificationNumberMessage, setCertificationNumberMessage] = useState<string>('');
         const [passwordErrorMessage, setpasswordErrorMessage] = useState<string>('');
         const [passwordCheckErrorMessage, setPasswordCheckErrorMessage] = useState<string>('');
         const [nicknameErrorMessage, setNicknameErrorMessage] = useState<string>('');
         const [telNumberErrorMessage, setTelNumberErrorMessage] = useState<string>('');
         const [addressErrorMessage, setAddressErrorMessage] = useState<string>('');
 
+        const [isEmailCheck, setEmailCheck] = useState<boolean>(false);
+        const [isCertificationCheck, setCertificationCheck] = useState<boolean>(false);
+
         const [passwordButtonIcon, setPasswordButtonIcon] = useState<'eye-light-off-icon' | 'eye-light-on-icon'>('eye-light-off-icon');
         const [passwordCheckButtonIcon, setPasswordCheckButtonIcon] = useState<'eye-light-off-icon' | 'eye-light-on-icon'>('eye-light-off-icon');
 
         const open = useDaumPostcodePopup();
+        const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
 
         const signUpResponse = (responseBody: SignInResponseDto | ResponseDto | null) => {
             if(!responseBody) {
@@ -200,11 +215,58 @@ export default function Authentication() {
             setView('sign-in');
         }
 
+        const emailCertificationResponse = (responseBody: responseBody<EmailCertificationResponseDto>) => {
+
+            if (!responseBody) return;
+            const { code } = responseBody;
+    
+            if (code === ResponseCode.VALIDATION_FAILED) alert(' 이메일을 모두 입력하세요.');
+            if (code === ResponseCode.DUPLICATE_EMAIL) {
+                setEmailError(true);
+                setEmailMessage('이미 사용중인 이메일 입니다.');
+                setEmailCheck(false);
+            }
+            if (code === ResponseCode.MAIL_FAIL) alert('이메일 전송에 실패했습니다.');
+            if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
+            if (code === ResponseCode.SUCCESS) return;
+    
+            setEmailError(false);
+            setEmailMessage('인증번호가 전송되었습니다');
+        }
+
+        const checkCertificationResponse = (responseBody: responseBody<CheckcertificationResponseDto>) => {
+
+            if (!responseBody) return;
+    
+            const { code } = responseBody;
+            if (code === ResponseCode.VALIDATION_FAILED) alert('이메일, 인증번호를 모두 입력하세요. ');
+            if (code === ResponseCode.CERTIFICATION_FAIL) {
+                setCertificationNumberError(true);
+                setCertificationNumberMessage('인증번호가 일치하지 않습니다');
+                setCertificationCheck(false);
+    
+            }
+            if (code === ResponseCode.DATABASE_ERROR) alert('데이터베이스 오류입니다.');
+            if (code !== ResponseCode.SUCCESS) return;
+    
+            setCertificationNumberError(false);
+            setCertificationNumberMessage('인증번호가 확인되었습니다.');
+            setCertificationCheck(true);
+    
+        }
+
         const onEmailChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
             const {value} = event.target;
             setEmail(value);
             setEmailError(false);
             setEmailErrorMessage('');
+        }
+
+        const onCertificationNumberChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+            const { value } = event.target;
+            setCertificationNumber(value);
+            setCertificationNumberMessage('');
+            setCertificationCheck(false);
         }
 
         const onPasswordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -220,6 +282,34 @@ export default function Authentication() {
             setPasswordCheckError(false);
             setPasswordCheckErrorMessage('')
         }
+
+        const onEmailButtonClickHanlder = () => {
+            if (!email) return;
+    
+            const checkedEmail = emailPattern.test(email);
+            if (!checkedEmail) {
+                setEmailError(true);
+                setEmailMessage('이메일 형식이 아닙니다.');
+                return;
+            }
+    
+            const requestBody: EmailCertificationRequestDto = { email };
+            emailCertificationRequest(requestBody).then(emailCertificationResponse);
+    
+            setEmailError(false);
+            setEmailMessage('이메일 전송중...');
+        };
+
+        const onCertificationNumberButtonClickHanlder = () => {
+
+            if (!email || !certificationNumber) return;
+    
+            const requestBody: CheckCertificationRequestDto = { email, certificationNumber };
+            checkCertificationRequest(requestBody).then(checkCertificationResponse);
+    
+    
+        };
+
         const onPasswordButtonClickHandler = () => {
             if (passwordButtonIcon === 'eye-light-off-icon') {
                 setPasswordButtonIcon('eye-light-on-icon');
@@ -338,6 +428,12 @@ export default function Authentication() {
             passwordRef.current.focus();
         }
 
+        const onCertificiationNumberKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
+            if (event.key !== 'Enter') return;
+            onCertificationNumberButtonClickHanlder();
+    
+        }
+
         const onPasswordKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
             if (event.key !== 'Enter') return;
             if (!passwordCheckRef.current) return;
@@ -425,12 +521,20 @@ export default function Authentication() {
 
                         {page === 1 &&
                             <>
-                                <InputBox ref={emailRef} label={'이메일 주소 *'} type='text' placeholder='이메일 주소를 입력해주세요'
+                                {/* <InputBox ref={emailRef} label={'이메일 주소 *'} type='text' placeholder='이메일 주소를 입력해주세요'
                                           value={email}
                                           error={isEmailError} message={emailErrorMessage}
                                           onChange={onEmailChangeHandler}
                                           onKeyDown={onEmailKeyDownHandler}
-                                />
+                                /> */}
+                                <InputBox ref={emailRef} label={'이메일 주소 *'} type='text' placeholder='이메일 주소를 입력헤주세요' 
+                                          value={email}
+                                          error={isEmailError}  message={emailErrorMessage}
+                                        //   message={emailMessage} 
+                                          onChange={onEmailChangeHandler}
+                                          onKeyDown={onEmailKeyDownHandler}
+                                          buttonTitle='중복 확인' onButtonClick={onEmailButtonClickHanlder}
+                                 /> 
 
                                 <InputBox ref={passwordRef} label={'비밀번호 *'} type={passwordType}
                                           placeholder='비밀번호를 입력해주세요' value={password}
@@ -449,6 +553,15 @@ export default function Authentication() {
                                           onButtonClick={onPasswordCheckButtonClickHandler}
                                           onKeyDown={onPasswordCheckKeyDownHandler}
                                 />
+
+                                <InputBox ref={certificationNumberRef} label='인증번호' type='text'
+                                          placeholder='인증번호 4자리르 입력해주세요'  value={certificationNumber} 
+                                          error={isCertificationNumberError} message={certificationNumberMessage} 
+                                          onChange={onCertificationNumberChangeHandler} 
+                                          onKeyDown={onCertificiationNumberKeyDownHandler}
+                                          buttonTitle='인증 확인' onButtonClick={onCertificationNumberButtonClickHanlder} 
+                                />
+                                          
                             </>
                         }
                         {page === 2 &&

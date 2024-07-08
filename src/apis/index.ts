@@ -26,11 +26,18 @@ import {
 import {GetPopularListResponseDto, GetRelationListResponseDto} from "./response/search";
 import {PatchNicknameRequestDto, PatchProfileImageRequestDto} from "./request/user";
 import api from './api-instance';
+import EmailCertificationResponseDto from "./response/auth/email-certification.response.dto";
+import EmailCertificationRequestDto from "./request/auth/email-certification.request.dto";
+import { error } from "console";
+import CheckCertificationRequestDto from "./request/auth/check-certification.request.dto";
+import CheckcertificationResponseDto from "./response/auth/check-certification.response.dto";
 
 
 const SIGN_IN_URL = () => '/auth/sign-in';
 const SIGN_OUT_URL = () => '/auth/sign-out';
 const SIGN_UP_URL = () => '/auth/sign-up';
+const EMAIL_CERTIFICATION_URL = () => `/auth/email-certification`;
+const CHECK_CERTIFICATION_URL = () => `/auth/check-certification`;
 
 export const signInRequest = async (requestBody: SignInRequestDto) => {
     const result = await api.post(SIGN_IN_URL(), requestBody)
@@ -71,6 +78,35 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
         });
     return result;
 }
+
+export const emailCertificationRequest = async (requestBody: EmailCertificationRequestDto) => {
+
+    const result = api.post(EMAIL_CERTIFICATION_URL(), requestBody)
+        .then(response => {
+            const responseBody: EmailCertificationResponseDto = response.data;
+            return responseBody;
+        })
+        .catch(error => {
+            if (!error.response.data) return null;
+            const responseBody : ResponseDto = error.reseponse.data;
+            return responseBody;
+        });
+    return result;
+};
+
+export const checkCertificationRequest = async (requestBody: CheckCertificationRequestDto) => {
+    const result = api.post(CHECK_CERTIFICATION_URL(), requestBody)
+        .then(response => {
+            const responseBody: CheckcertificationResponseDto = response.data;
+            return responseBody;
+        })
+        .catch(error => {
+            if (!error.response.data) return null;
+            const responseBody : ResponseDto = error.reseponse.data;
+            return responseBody;
+        });
+    return result;
+};
 
 const GET_BOARD_URL = (boardNumber: number | string) => `/board/${boardNumber}`;
 const POST_BOARD_URL = () =>  '/board';

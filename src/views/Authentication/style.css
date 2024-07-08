@@ -69,7 +69,7 @@
     user-select: none;
     pointer-events: none;
 }
-
+/*  */
 .auth-card {
     height:90%;
     grid-column: 2 / 3;

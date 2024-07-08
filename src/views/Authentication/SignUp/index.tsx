@@ -183,7 +183,7 @@ export default function SignUp() {
             return;
         }
 
-        const requestBody: EmailCertificationRequestDto = { id, email };
+        const requestBody: EmailCertificationRequestDto = {  email };
         emailCertificationRequest(requestBody).then(emailCertificationResponse);
 
         setEmailError(false);
@@ -194,7 +194,7 @@ export default function SignUp() {
 
         if (!id || !email || !certificationNumber) return;
 
-        const requestBody: CheckCertificationRequestDto = { id, email, certificationNumber };
+        const requestBody: CheckCertificationRequestDto = { email, certificationNumber };
         checkCertificationRequest(requestBody).then(checkCertificationResponse);
 
 
@@ -269,7 +269,7 @@ export default function SignUp() {
             <div className='sign-up-image'></div>
             <div className='sign-up-container'>
                 <div className='sign-up-box'>
-                    <div className='sign-up-title'>{'임대주택 가격 서비스'}</div>
+                    <div className='sign-up-title'>{'YellowBoard'}</div>
                     <div className='sign-up-content-box'>
                         <div className='sign-up-content-sns-sign-in-box'>
                             <div className='sign-up-content-sns-sign-in-title'>{'SNS 회원가입'}</div>
