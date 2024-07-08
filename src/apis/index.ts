@@ -88,7 +88,7 @@ export const emailCertificationRequest = async (requestBody: EmailCertificationR
         })
         .catch(error => {
             if (!error.response.data) return null;
-            const responseBody : ResponseDto = error.reseponse.data;
+            const responseBody : ResponseDto = error.response.data;
             return responseBody;
         });
     return result;
@@ -97,12 +97,13 @@ export const emailCertificationRequest = async (requestBody: EmailCertificationR
 export const checkCertificationRequest = async (requestBody: CheckCertificationRequestDto) => {
     const result = api.post(CHECK_CERTIFICATION_URL(), requestBody)
         .then(response => {
+            console.log(response)
             const responseBody: CheckcertificationResponseDto = response.data;
             return responseBody;
         })
         .catch(error => {
             if (!error.response.data) return null;
-            const responseBody : ResponseDto = error.reseponse.data;
+            const responseBody : ResponseDto = error.response.data;
             return responseBody;
         });
     return result;
