@@ -27,6 +27,7 @@ import { GetSignInUserResponseDto } from "./apis/response/user";
 import { ResponseDto } from "./apis/response";
 import { User } from "./types/interface";
 import { getSignInUserRequest } from "./apis";
+import OAuth from 'views/Authentication/OAuth';
 
 function App() {
 
@@ -75,6 +76,7 @@ function App() {
                 <Route element={<Container />}>
                     <Route path={MAIN_PATH()} element={<Main />} />
                     <Route path={AUTH_PATH()} element={<Authentication />} />
+                    <Route path='/auth/oauth-response/:token/:expirationTime' element={<OAuth />} />
                     <Route path={SEARCH_PATH(':searchWord')} element={<Search />} />
                     <Route path={USER_PATH(':userEmail')} element={<UserP />} />
                     <Route path={BOARD_PATH()}>
