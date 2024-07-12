@@ -2,7 +2,7 @@ import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from "
 import './style.css'
 import InputBox from "../../components/InputBox";
 import { SignInRequestDto, SignUpRequestDto } from "../../apis/request/auth";
-import { checkCertificationRequest, emailCertificationRequest, signInRequest, signUpRequest } from "../../apis";
+import { checkCertificationRequest, emailCertificationRequest, signInRequest, signUpRequest, SNS_SIGN_IN_URL } from "../../apis";
 import { ResponseDto } from "../../apis/response";
 import { SignInResponseDto, SignUpResponseDto } from "../../apis/response/auth";
 import { useCookies } from "react-cookie";
@@ -73,6 +73,10 @@ export default function Authentication() {
             signInRequest(requestBody).then(signInResponse);
         }
 
+        const onSnsSignInButtonClickHandler = (type: 'kakao' | 'naver') => {
+            window.location.href = SNS_SIGN_IN_URL(type);
+        }
+
         const onSignUpLinkClickHandler = () => {
             setView('sign-up');
         }
@@ -124,6 +128,14 @@ export default function Authentication() {
                         <div className='auth-description-box'>
                             <div className='auth-description'>{'신규 사용자이신가요? '}<span className='auth-description-link'
                                 onClick={onSignUpLinkClickHandler}>{'회원가입'}</span>
+                            </div>
+                        </div>
+                        <div className='sign-in-content-divider'></div>
+                        <div className='sign-in-content-sns-sign-in-box'>
+                            <div className='sign-in-content-sns-sign-in-title'>{'SNS 로그인'}</div>
+                            <div className='sign-in-content-sns-sign-in-button-box'>
+                                <div className='kakao-sign-in-button' onClick={() => onSnsSignInButtonClickHandler('kakao')}></div>
+                                <div className='naver-sign-in-button' onClick={() => onSnsSignInButtonClickHandler('naver')}></div>
                             </div>
                         </div>
                     </div>
@@ -555,12 +567,7 @@ export default function Authentication() {
 
                         {page === 1 &&
                             <>
-                                {/* <InputBox ref={emailRef} label={'이메일 주소 *'} type='text' placeholder='이메일 주소를 입력해주세요'
-                                          value={email}
-                                          error={isEmailError} message={emailErrorMessage}
-                                          onChange={onEmailChangeHandler}
-                                          onKeyDown={onEmailKeyDownHandler}
-                                /> */}
+                            
                                 <InputBox ref={emailRef} label={'이메일 주소 *'} type='text' placeholder='이메일 주소를 입력헤주세요'
                                     value={email}
                                     error={isEmailError} message={emailMessage}

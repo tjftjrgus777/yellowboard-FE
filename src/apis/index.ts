@@ -32,7 +32,7 @@ import { error } from "console";
 import CheckCertificationRequestDto from "./request/auth/check-certification.request.dto";
 import CheckcertificationResponseDto from "./response/auth/check-certification.response.dto";
 
-
+export const SNS_SIGN_IN_URL = (type: "kakao" | "naver") => `http://localhost:4000/api/v1/auth/oauth2/${type}`;
 const SIGN_IN_URL = () => '/auth/sign-in';
 const SIGN_OUT_URL = () => '/auth/sign-out';
 const SIGN_UP_URL = () => '/auth/sign-up';

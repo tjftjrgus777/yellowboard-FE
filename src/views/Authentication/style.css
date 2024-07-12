@@ -183,5 +183,36 @@
     line-height: 140%;
 }
 
+.sign-in-content-sns-sign-in-box {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 16px;
+
+}
+
+.sign-in-content-sns-sign-in-title {
+    color: rgba(138, 146, 166, 1);
+    
+    font-size: 16px;
+    font-weight: 400;
+    line-height: normal;
+    
+    }
+    
+    .sign-in-content-sns-sign-in-button-box {
+    display: flex;
+    
+    gap: 24px;
+    
+    }
+    
+    .sign-in-content-divider {
+        border-top: 1px solid rgba(238, 238, 238, 1);
+        width: 64px;
+
+    }
 
 

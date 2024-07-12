@@ -64,17 +64,6 @@
     line-height: 175%;
 }
 
-.icon-button {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-
 .input-box-button,
 .input-box-button-disable {
     flex-shrink: 0;
