@@ -96,7 +96,6 @@ export default function Main() {
         useEffect(() => {
             getLatestBoardListRequest().then(getLatestBoardListResponse)
             getPopularListRequest().then(getPopularListResponse)
-            console.log(popularWordList);
         }, []);
 
         return (

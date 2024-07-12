@@ -8,7 +8,7 @@ import {BOARD_PATH, BOARD_WRITE_PATH, MAIN_PATH, USER_PATH} from "../../constant
 import {useLoginUserStore} from "../../stores";
 import {
     fileUploadRequest,
-    getUserBoardListRequeset,
+    getUserBoardListRequest,
     getUserRequest,
     patchNicknameRequest,
     patchProfileImageRequest
@@ -45,7 +45,7 @@ export default function UserPage() {
             if (!cookies.accessToken) return;
 
             const requestBody: PatchProfileImageRequestDto = {profileImage};
-            patchProfileImageRequest(requestBody, cookies.accessToken).then(patchProfileImageReseponse);
+            patchProfileImageRequest(requestBody).then(patchProfileImageReseponse);
         }
 
         const patchProfileImageReseponse = (responseBody: PatchProfileImageResponseDto | ResponseDto | null) => {
@@ -92,7 +92,7 @@ export default function UserPage() {
             const requestBody: PatchNicknameRequestDto = {
                 nickname: changeNickname
             };
-            patchNicknameRequest(requestBody, cookies.accessToken).then(patchNicknameResponse);
+            patchNicknameRequest(requestBody).then(patchNicknameResponse);
         }
 
         const patchNicknameResponse = (responseBody: PatchNicknameResponseDto | ResponseDto | null) => {
@@ -228,7 +228,7 @@ export default function UserPage() {
 
         useEffect(() => {
             if(!userEmail) return;
-            getUserBoardListRequeset(userEmail).then(getUserBoardListResponse);
+            getUserBoardListRequest(userEmail).then(getUserBoardListResponse);
         }, [userEmail]);
 
 

@@ -11,12 +11,14 @@ import {
     SEARCH_PATH,
     USER_PATH
 } from "../../constant";
-import {useCookies} from "react-cookie";
+import {Cookies} from "react-cookie";
 import {useBoardStore, useLoginUserStore} from "../../stores";
-import {fileUploadRequest, patchBoardRequset, postBoardRequest} from "../../apis";
+import {fileUploadRequest, patchBoardRequest, postBoardRequest, signOutRequest} from "../../apis";
 import {PatchBoardRequestDto, PostBoardRequestDto} from "../../apis/request/board";
 import {PatchBoardResponseDto, PostBoardResponseDto} from "../../apis/response/board";
 import {ResponseDto} from "../../apis/response";
+import {SignOutRequestDto} from "../../apis/request/auth";
+import {SignOutResponseDto} from "../../apis/response/auth";
 
 export default function Header() {
 
@@ -24,15 +26,18 @@ export default function Header() {
 
     const { pathname } = useLocation();
 
-    const [cookies, setCookies] = useCookies();
+    const cookies = new Cookies();
     const [isLogin, setLogin] = useState<boolean>(false);
-    const [isAuthPage, setAuthPage] = useState<boolean>(false);
-    const [isMainPage, setMainPage] = useState<boolean>(false);
-    const [isSearchPage, setSearchPage] = useState<boolean>(false);
-    const [isBoardDetailPage, setBoardDetailPage] = useState<boolean>(false);
-    const [isBoardWritePage, setBoardWritePage] = useState<boolean>(false);
-    const [isBoardUpdatePage, setBoardUpdatePage] = useState<boolean>(false);
-    const [isUserPage, setUserPage] = useState<boolean>(false);
+
+    const [pageState, setPageState] = useState({
+        isAuthPage: false,
+        isMainPage: false,
+        isSearchPage: false,
+        isBoardDetailPage: false,
+        isBoardWritePage: false,
+        isBoardUpdatePage: false,
+        isUserPage: false
+    });
 
     const navigate = useNavigate();
 
@@ -40,7 +45,6 @@ export default function Header() {
         navigate(MAIN_PATH());
     }
     const SearchButton = () => {
-
         const searchButtonRef = useRef<HTMLDivElement | null>(null);
 
         const [status, setStatus] = useState<boolean>(false);
@@ -68,7 +72,7 @@ export default function Header() {
         useEffect(()=> {
             if(searchWord) {
                 setWord(searchWord);
-                setStatus(true);
+                setStatus(false);
             }
         },[searchWord]);
 
@@ -99,17 +103,34 @@ export default function Header() {
     }
 
     const MyPageButton = () => {
-
         const { userEmail } = useParams();
         const onMyPageButtonClickHandler = () => {
-            if(!loginUser) return;
-            const { email } = loginUser;
-            navigate(USER_PATH(email));
+            if (loginUser) {
+                navigate(USER_PATH(loginUser.email));
+            }
+        }
+
+        const signOutResponse = (responseBody: SignOutResponseDto | ResponseDto | null) => {
+            if(!responseBody) {
+                alert('네트워크 이상입니다.');
+                return;
+            }
+
+            const { code } = responseBody;
+
+            if(code === 'DBE') alert('데이터베이스 오류입니다');
+            if(code !== 'SU') return;
         }
 
         const onSignOutButtonClickHandler = () => {
+            const accessToken = cookies.get('accessToken');
+            const refreshToken = cookies.get('refreshToken');
+            const requestBody: SignOutRequestDto = { accessToken, refreshToken };
+            signOutRequest(requestBody).then(signOutResponse);
+
             resetLoginUser();
-            setCookies('accessToken', '', { path: MAIN_PATH(), expires: new Date() });
+            cookies.remove('accessToken', { path: '/' });
+            cookies.remove('refreshToken', { path: '/' });
             navigate(MAIN_PATH());
         }
 
@@ -155,7 +176,7 @@ export default function Header() {
             navigate(BOARD_PATH() + '/' + BOARD_DETAIL_PATH(boardNumber));
         }
         const onUploadButtonClickHandler = async () => {
-            const accessToken = cookies.accessToken;
+            const accessToken = cookies.get('accessToken');
             if (!accessToken) return;
 
             const boardImageList: string[] = [];
@@ -171,13 +192,13 @@ export default function Header() {
                 const requestBody: PostBoardRequestDto = {
                     title, content, boardImageList
                 }
-                postBoardRequest(requestBody, accessToken).then(postBoardResponse);
+                postBoardRequest(requestBody).then(postBoardResponse);
             } else {
                 if(!boardNumber) return;
                 const requestBody: PatchBoardRequestDto = {
                     title, content, boardImageList
                 }
-                patchBoardRequset(requestBody, boardNumber, accessToken).then(patchBoardResponse);
+                patchBoardRequest(requestBody, boardNumber).then(patchBoardResponse);
             }
         }
 
@@ -187,27 +208,21 @@ export default function Header() {
     }
 
     useEffect(() => {
-
-        const isAuthPage = pathname.startsWith(AUTH_PATH());
-        setAuthPage(isAuthPage);
-        const isMainPage = pathname === MAIN_PATH();
-        setMainPage(isMainPage);
-        const isSearchPage = pathname.startsWith(SEARCH_PATH(''));
-        setSearchPage(isSearchPage);
-        const isBoardDetailPage = pathname.startsWith(BOARD_PATH() + '/' + BOARD_DETAIL_PATH(''));
-        setBoardDetailPage(isBoardDetailPage);
-        const isBoardWritePage = pathname.startsWith(BOARD_PATH() + '/' + BOARD_WRITE_PATH());
-        setBoardWritePage(isBoardWritePage);
-        const isBoardUpdatePage = pathname.startsWith(BOARD_PATH() + '/' + BOARD_UPDATE_PATH(''));
-        setBoardUpdatePage(isBoardUpdatePage);
-        const isUserPage = pathname.startsWith(USER_PATH(''));
-        setUserPage(isUserPage);
+        const newState = {
+            isAuthPage: pathname.startsWith(AUTH_PATH()),
+            isMainPage: pathname === MAIN_PATH(),
+            isSearchPage: pathname.startsWith(SEARCH_PATH('')),
+            isBoardDetailPage: pathname.startsWith(BOARD_PATH() + '/' + BOARD_DETAIL_PATH('')),
+            isBoardWritePage: pathname.startsWith(BOARD_PATH() + '/' + BOARD_WRITE_PATH()),
+            isBoardUpdatePage: pathname.startsWith(BOARD_PATH() + '/' + BOARD_UPDATE_PATH('')),
+            isUserPage: pathname.startsWith(USER_PATH(''))
+        };
+        setPageState(newState);
     }, [pathname]);
 
     useEffect(() => {
         setLogin(loginUser !== null);
     }, [loginUser]);
-
 
     return (
         <div id='header'>
@@ -220,15 +235,25 @@ export default function Header() {
                 </div>
                 <div className='header-right-box'>
                     {
-                        (isAuthPage || isBoardWritePage || !isBoardUpdatePage || isBoardDetailPage) &&
+                        (
+                            pageState.isAuthPage ||
+                            pageState.isBoardWritePage ||
+                            !pageState.isBoardUpdatePage ||
+                            pageState.isBoardDetailPage
+                        ) &&
                         <SearchButton />
                     }
                     {
-                        (isMainPage || isSearchPage || isBoardDetailPage || isUserPage) &&
+                        (
+                            pageState.isMainPage ||
+                            pageState.isSearchPage ||
+                            pageState.isBoardDetailPage ||
+                            pageState.isUserPage
+                        ) &&
                         <MyPageButton />
                     }
                     {
-                        (isBoardWritePage || isBoardUpdatePage ) &&
+                        (pageState.isBoardWritePage || pageState.isBoardUpdatePage ) &&
                         <UploadButton />
                     }
                 </div>

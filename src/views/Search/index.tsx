@@ -4,7 +4,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {BoardListItem} from "../../types/interface";
 import BoardItem from "../../components/BoardItem";
 import {SEARCH_PATH} from "../../constant";
-import {getRelationListRequest, getSearchBoardListRequeset} from "../../apis";
+import {getRelationListRequest, getSearchBoardListRequest} from "../../apis";
 import {GetSearchBoardListResponseDto} from "../../apis/response/board";
 import {ResponseDto} from "../../apis/response";
 import {usePaginaion} from "../../hooks";
@@ -62,9 +62,11 @@ export default function Search() {
 
     useEffect(() => {
         if(!searchWord) return;
-        getSearchBoardListRequeset(searchWord, preSearchWord).then(getSearchBoardListResponse);
+        if(searchWord !== preSearchWord) {
+            getSearchBoardListRequest(searchWord, preSearchWord).then(getSearchBoardListResponse);
+        }
         getRelationListRequest(searchWord).then(getRelationListResponse);
-    }, [searchWord]);
+    }, [searchWord, preSearchWord]);
 
     if (!searchWord) return (<></>)
 

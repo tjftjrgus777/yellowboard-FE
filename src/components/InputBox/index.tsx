@@ -1,51 +1,61 @@
-import {Dispatch, SetStateAction, KeyboardEvent, forwardRef, ChangeEvent} from "react";
+import { Dispatch, SetStateAction, KeyboardEvent, forwardRef, ChangeEvent } from "react";
 import './style.css'
 
 interface Props {
     label: string;
-    type: 'text' | 'password';
     placeholder: string;
+    type: 'text' | 'password';
     value: string;
-    onChange: (event: ChangeEvent<HTMLInputElement>) => void ;
-    error: boolean;
-
-    icon?: 'eye-light-off-icon'|'eye-light-on-icon'|'expand-right-light-icon';
+    isErrorMessage?: boolean;
+    buttonTitle?: string;
+    message?: string;
+    onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+    onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
     onButtonClick?: () => void;
 
-    message? : string;
 
-    onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+    error?: boolean;
+    icon?: 'eye-light-off-icon' | 'eye-light-on-icon' | 'expand-right-light-icon';
+
+
 }
 
-const InputBox = forwardRef<HTMLInputElement, Props> ((props: Props, ref) => {
+const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
 
-    const { label, type, error, placeholder, value, icon, message } = props;
+    const { label, placeholder, type, error, value, isErrorMessage, buttonTitle, message, icon } = props;
     const { onChange, onButtonClick, onKeyDown } = props;
 
+    const buttonClass = value === '' ? 'input-box-button-disable' : 'input-box-button'
+    const messageClass = error ? 'input-box-message-error' : 'input-box-message'
+
+
+
     const onKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
-        if(!onKeyDown) return;
+        if (!onKeyDown) return;
         onKeyDown(event);
     }
 
-    return (
-      <div className='inputbox'>
-          <div className='inputbox-label'>{label}</div>
-          <div className={error ? 'inputbox-container-error' : 'inputbox-container'}>
-              <input ref={ref} type={type} className='input' placeholder={placeholder} value={value} onChange={onChange} onKeyDown={onKeyDownHandler}/>
-              {
-                  onButtonClick !== undefined && (
-                      <div className='icon-button' onClick={onButtonClick}>
-                          {icon !== undefined && (<div className={`icon ${icon}`}></div>)}
-                      </div>
-                  )
-              }
-          </div>
-          {
-              message!== undefined &&
-              <div className='inputbox-message'>{message}</div>
-          }
 
-      </div>
+
+    return (
+        <div className='inputbox'>
+            <div className='input-box-title'>{label}</div>
+            {/* <div className={message ? 'input-box-content-error' : 'input-box-content'}> */}
+            <div className='input-box-content'>
+                <div className="input-box-body">
+                    <input ref={ref} type={type} className='input-box-input' placeholder={placeholder} value={value} onChange={onChange} onKeyDown={onKeyDown} />
+                    {
+                        onButtonClick !== undefined && (
+                            <div className='icon-button' onClick={onButtonClick}>
+                                {icon !== undefined && (<div className={`icon ${icon}`}></div>)}
+                            </div>
+                        )
+                    }
+                    {buttonTitle !== undefined && onButtonClick !== undefined && <div className={buttonClass} onClick={onButtonClick}>{buttonTitle}</div>}
+                </div>
+                {message !== undefined && <div className={messageClass}>{message}</div>}
+            </div>
+        </div>
     );
 });
 
